@@ -7,7 +7,7 @@ var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(express.static(__dirname + '/index'));
+app.use(express.static(__dirname + 'static_files'));
 
 var routes = require('./routes/router');
 app.use('/', routes);
