@@ -1,4 +1,5 @@
 var UserSchema = require('../models/user');
+var path = require('path');
 
 var User = {
     authentication: function(req, res, next){
@@ -8,6 +9,7 @@ var User = {
             res.send("passwords dont match");
             return next(err);
           }
+          return next();
     },
     create: function(req, res, next){
         if (req.body.email && req.body.username && req.body.password && req.body.passwordConf) {
@@ -41,6 +43,24 @@ var User = {
             var err = new Error('All fields required.');
             err.status = 400;
             return next(err);
+        }
+    },
+    loginRequired: function(req, res, next){
+        if(req.session && req.session.userId){
+            return res.redirect('/profile');
+        }
+        else{
+            var err = new Error('Need to login to view this page');
+            err.status = 401;
+            return next(err);
+        }
+    },
+    login: function(req, res, next){
+        if(req.session && req.session.userId){
+            return res.redirect('/profile');
+        }
+        else{
+            return res.sendFile(path.join(__dirname + '/../static_files/index.html'));
         }
     }
 }
