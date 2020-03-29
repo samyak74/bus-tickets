@@ -51,9 +51,7 @@ var User = {
     },
     loginRequired: function(req, res, next){
         if(req.session && req.session.userId){
-            return res.render('profile.hbs',{
-                userID: req.session.userId
-            });
+            return next();
         }
         else{
             var err = new Error('Need to login to view this page');
@@ -84,6 +82,33 @@ var User = {
         else{
             return res.redirect('/');
         }
+    },
+    displayProfile: function(req, res, next){
+        UserSchema.findOne({ _id: req.person_id }, function(err, docs){
+            if(err){
+                return next(err);
+            }
+            console.log(docs)
+            // Admin can see the ticket bought by someone in more detail
+            if(req.session.userId == '5e7f373e445a7c2ad8170537'){
+                res.send(`Ticket bought by ${docs.username}`);
+            }
+            else{
+                res.send('Ticket has been bought');
+            }
+        });
+    },
+    buyTicket: function(req, res, next){
+        UserSchema.authenticate(req.body.logemail, req.body.logpassword, function (error, user) {
+            if (error || !user) {
+              var err = new Error('Wrong email or password.');
+              err.status = 401;
+              return next(err);
+            } else {
+              req.session.userId = user._id;
+              return next();
+            }
+        });
     }
 }
 

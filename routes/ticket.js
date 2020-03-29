@@ -63,6 +63,39 @@ var Ticket = {
                 });
             }
         });
+    },
+    ticketStatus: function(req, res, next){
+        ticket_number = req.params.ticket_number || req.body.ticket_number;
+        TicketSchema.findOne({ ticket_number: ticket_number }, function(err, docs){
+            if(err){
+                return next(err);
+            }
+            if(docs.status == 'open'){
+                if(req.body.ticket_number){
+                    return next();
+                }
+                else{
+                    res.send(`Ticket with ticket number ${req.params.ticket_number} is available`);
+                }
+            }
+            else{
+                if(req.body.ticket_number){
+                    res.send(`Ticket with ticket number ${req.body.ticket_number} is already booked`);
+                }
+                else{
+                    req.person_id = docs.p_id;
+                    return next();
+                }
+            }
+        });
+    },
+    bookingTicket: function(req, res, next){
+        TicketSchema.findOneAndUpdate({ ticket_number: req.body.ticket_number }, { $set: {status: 'closed', p_id: req.session.userId}}, function(err, docs){
+            if(err){
+                return next(err);
+            }
+            res.send('Ticket purchased successfully');
+        });
     }
 }
 
