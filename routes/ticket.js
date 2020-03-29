@@ -1,38 +1,45 @@
 var TicketSchema = require('../models/ticket');
 
 var Ticket = {
-    update: function(req, res, next){
+    update: function (req, res, next) {
 
     },
-    updateAll: function(req, res, next){
+    updateAll: function (req, res, next) {
         // Check whether the user attempting to update all the tickets is an admin or not
-        if(req.session.userId == '5e7f373e445a7c2ad8170537'){
-            TicketSchema.update({},{ $set: {status: 'open', p_id: null}},{multi: true}, function(err, docs){
-                if(err){
+        if (req.session.userId == '5e7f373e445a7c2ad8170537') {
+            TicketSchema.update({}, {
+                $set: {
+                    status: 'open',
+                    p_id: null
+                }
+            }, {
+                multi: true
+            }, function (err, docs) {
+                if (err) {
                     var err = new Error('The status of the tickets hasnt been updated. Please check the logs and try again');
                     err.status = 504;
                     return next(err);
                 }
             });
             res.send('Success!');
-        }
-        else{
+        } else {
             var err = new Error('You are not authorized to update any ticket');
             err.status = 401;
             return next(err);
         }
     },
-    closedTickets: function(req, res, next){
-        TicketSchema.find({ status: 'closed' }, function(err, docs){
-            if(err){
+    closedTickets: function (req, res, next) {
+        TicketSchema.find({
+            status: 'closed'
+        }, function (err, docs) {
+            if (err) {
                 return next(err);
-            }      
-            if(docs.length == 0){
-                res.send('<h1>All tickets are still available</h1>');
             }
-            else{
+            if (docs.length == 0) {
+                res.send('<h1>All tickets are still available</h1>');
+            } else {
                 tickets = [];
-                docs.forEach(function(doc){
+                docs.forEach(function (doc) {
                     ticket = {};
                     ticket['ticket_name'] = doc.ticket_number;
                     tickets.push(ticket);
@@ -43,17 +50,18 @@ var Ticket = {
             }
         });
     },
-    openTickets: function(req, res, next){
-        TicketSchema.find({ status: 'open' }, function(err, docs){
-            if(err){
+    openTickets: function (req, res, next) {
+        TicketSchema.find({
+            status: 'open'
+        }, function (err, docs) {
+            if (err) {
                 return next(err);
             }
-            if(docs.length == 0){
+            if (docs.length == 0) {
                 res.send('<h1>All tickets closed now</h1>');
-            }
-            else{
+            } else {
                 tickets = [];
-                docs.forEach(function(doc){
+                docs.forEach(function (doc) {
                     ticket = {};
                     ticket['ticket_name'] = doc.ticket_number;
                     tickets.push(ticket);
@@ -64,34 +72,40 @@ var Ticket = {
             }
         });
     },
-    ticketStatus: function(req, res, next){
+    ticketStatus: function (req, res, next) {
         ticket_number = req.params.ticket_number || req.body.ticket_number;
-        TicketSchema.findOne({ ticket_number: ticket_number }, function(err, docs){
-            if(err){
+        TicketSchema.findOne({
+            ticket_number: ticket_number
+        }, function (err, docs) {
+            if (err) {
                 return next(err);
             }
-            if(docs.status == 'open'){
-                if(req.body.ticket_number){
+            if (docs.status == 'open') {
+                if (req.body.ticket_number) {
                     return next();
-                }
-                else{
+                } else {
                     res.send(`Ticket with ticket number ${req.params.ticket_number} is available`);
                 }
-            }
-            else{
-                if(req.body.ticket_number){
+            } else {
+                if (req.body.ticket_number) {
                     res.send(`Ticket with ticket number ${req.body.ticket_number} is already booked`);
-                }
-                else{
+                } else {
                     req.person_id = docs.p_id;
                     return next();
                 }
             }
         });
     },
-    bookingTicket: function(req, res, next){
-        TicketSchema.findOneAndUpdate({ ticket_number: req.body.ticket_number }, { $set: {status: 'closed', p_id: req.session.userId}}, function(err, docs){
-            if(err){
+    bookingTicket: function (req, res, next) {
+        TicketSchema.findOneAndUpdate({
+            ticket_number: req.body.ticket_number
+        }, {
+            $set: {
+                status: 'closed',
+                p_id: req.session.userId
+            }
+        }, function (err, docs) {
+            if (err) {
                 return next(err);
             }
             res.send('Ticket purchased successfully');
