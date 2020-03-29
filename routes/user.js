@@ -23,7 +23,9 @@ var User = {
                   return next(error);
                 } else {
                   req.session.userId = user._id;
-                  return res.redirect('/profile');
+                  return res.render('profile.hbs',{
+                    userID: req.session.userId
+                    });
                 }
             });          
         }
@@ -35,7 +37,9 @@ var User = {
                   return next(err);
                 } else {
                   req.session.userId = user._id;
-                  return res.redirect('/profile');
+                  return res.render('profile.hbs',{
+                    userID: req.session.userId
+                    });
                 }
             });
         }
@@ -47,7 +51,9 @@ var User = {
     },
     loginRequired: function(req, res, next){
         if(req.session && req.session.userId){
-            return res.redirect('/profile');
+            return res.render('profile.hbs',{
+                userID: req.session.userId
+            });
         }
         else{
             var err = new Error('Need to login to view this page');
@@ -57,10 +63,26 @@ var User = {
     },
     login: function(req, res, next){
         if(req.session && req.session.userId){
-            return res.redirect('/profile');
+            return res.render('profile.hbs',{
+                userID: req.session.userId
+            });
         }
         else{
             return res.sendFile(path.join(__dirname + '/../static_files/index.html'));
+        }
+    },
+    logout: function(req, res, next){
+        if (req.session) {
+            req.session.destroy(function(err) {
+              if(err) {
+                return next(err);
+              } else {
+                return res.redirect('/');
+              }
+            });
+        }
+        else{
+            return res.redirect('/');
         }
     }
 }
