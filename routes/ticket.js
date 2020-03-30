@@ -6,7 +6,7 @@ var Ticket = {
     },
     updateAll: function (req, res, next) {
         // Check whether the user attempting to update all the tickets is an admin or not
-        if (req.session.userId == '5e7f373e445a7c2ad8170537') {
+        if (req.session.userId == '5e822a9ce10b6e09ab50bee3') {
             TicketSchema.update({}, {
                 $set: {
                     status: 'open',

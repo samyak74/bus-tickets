@@ -104,7 +104,7 @@ var User = {
                 return next(err);
             }
             // Admin can see the ticket bought by someone in more detail
-            if (req.session.userId == '5e7f373e445a7c2ad8170537') {
+            if (req.session.userId == '5e822a9ce10b6e09ab50bee3') {
                 res.send(`Ticket bought by ${docs.username}`);
             } else {
                 res.send('Ticket has been bought');
