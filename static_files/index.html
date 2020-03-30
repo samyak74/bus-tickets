@@ -16,7 +16,7 @@
     <h3>Register</h3>
     <div class="login-form">
         <form id="login" action="/" method="post" onsubmit="event.preventDefault(); validateMyForm();">
-            <input type="text" name="email" placeholder="E-mail" required="">
+            <input type="text" name="email" placeholder="E-mail" id="email" required="">
             <input type="text" name="username" placeholder="Username" required="">
             <input type="password" name="password" placeholder="Password" id="password" required="">
             <input type="password" name="passwordConf" placeholder="Confirm Password" id="password_conf" required="">
@@ -27,13 +27,17 @@
     <script type="text/javascript">
         var passWordField = document.getElementById('password')
         var passWordConfirmField = document.getElementById('password_conf')
+        var email = document.getElementById('email')
         var form = document.getElementById('login')
 
         function validateMyForm() {
+            console.log(email.value)
             if (passWordField.value != passWordConfirmField.value) {
                 alert("Passwords do not match. Please try again.");
+            }else if(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email.value)){
+                form.submit();
             } else {
-                form.submit()
+                alert("Incorrect email. Please enter a correct email address");
             }
         }
     </script>

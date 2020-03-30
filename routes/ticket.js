@@ -110,6 +110,17 @@ var Ticket = {
             }
             res.send('Ticket purchased successfully');
         });
+    },
+    checkTicketValidity: function(req, res, next){
+        ticket_number = req.params.ticket_number || req.body.ticket_number;
+        if(ticket_number >=1 && ticket_number <= 40){
+            return next();
+        }
+        else{
+            var err = new Error("No ticket found with this number");
+            err.status = 404;
+            return next(err);
+        }
     }
 }
 
